@@ -60,8 +60,8 @@ def prec(char):
 
 def is_digit(num):
     try:
-        num = int(num)
-        return isinstance(num, int)
+        num = float(num)
+        return isinstance(num, float)
     except:
         return False
 
@@ -138,13 +138,13 @@ def eval_helper_operate(char, num_1, num_2):
 
 
 def postfix_eval(input_str):
-    sufficient_stk_size = 30                          # sufficient size of stack for this proj is 30
+    sufficient_stk_size = 30
     stk = Stack(sufficient_stk_size)    
     in_lst = input_str.split()
     for char in in_lst:
-        if is_digit(char):
-            stk.push(int(char))
-        else:
+        if not is_operator(char):
+            stk.push(float(char))
+        elif is_operator(char):
             num_2 = stk.pop() 
             num_1 = stk.pop()
             ans = eval_helper_operate(char, num_1, num_2)

@@ -319,13 +319,20 @@ class Test_Postfixit(unittest.TestCase):
         act_ans = postfix_eval(input_str)
         self.assertEqual(act_ans, exp_ans)
         
-    def test_postfix_eval_ValueError(self):
-        input_str = "@ # $ %"
-        with self.assertRaises(ValueError):
-            postfix_eval(input_str)
-
-    def test_postfix_eval_mix(self):
+    def test_postfix_eval_mix_1(self):
         input_str = "2 3 ^ 2 / 2 ^"
+        exp_ans = 16
+        act_ans = postfix_eval(input_str)
+        self.assertEqual(act_ans, exp_ans)    
+
+    def test_postfix_eval_mix_2(self):
+        input_str = "1 2 + 3 * 6 + 2 3 + /"
+        exp_ans = 3
+        act_ans = postfix_eval(input_str)
+        self.assertEqual(act_ans, exp_ans)    
+
+    def test_postfix_eval_mix_3(self):
+        input_str = "2 2 + 2 2 + 2 2 + 2 2 + + + +"
         exp_ans = 16
         act_ans = postfix_eval(input_str)
         self.assertEqual(act_ans, exp_ans)    
