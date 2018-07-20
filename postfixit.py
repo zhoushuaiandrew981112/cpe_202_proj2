@@ -1,6 +1,6 @@
 # Name:          Zhoushuai (Andrew) Wu
 # Course:        CPE 202
-# instructor:    Daniel Kauffman
+# Instructor:    Daniel Kauffman
 # Assignment:    Project 2: Postfix-it
 # Term:          Summer 2018
 
@@ -32,8 +32,12 @@ class Stack:
             self.items[self.num_item] = None
             return temp
 
+
     def peek(self):
-          return self.items[self.num_item - 1]
+        if self.num_item <= 0:
+            raise ValueError
+        else:  
+            return self.items[self.num_item - 1]
     
  
 
@@ -62,6 +66,12 @@ def is_digit(num):
         return False
 
 
+def is_operator(char):
+    if char in "^*/+-()[]{}":
+        return True
+    return False
+
+
 def in_to_post_branch(stk, out_lst, in_lst, char):
     if is_digit(char) or str(char).isalpha():     # if the char is a int or variable
         out_lst.append(char)                          # append to the output list
@@ -73,8 +83,10 @@ def in_to_post_branch(stk, out_lst, in_lst, char):
             out_lst.append(stk_token)                     # append the char to output list
             stk_token = stk.pop()                         # pop the next char and store it to stk_token
     else:                                         # if the char is an operation symbol
-        while stk.num_item != 0 and \
-            prec(stk.peek()) >= prec(char):           # check precedence of stk_token and char while stk not empty
+                                                      # if top of stk has higher precedenc while stk not empty
+        while stk.num_item != 0 and prec(stk.peek()) >= prec(char):
+            if stk.peek() == "^" and char == "^":         # if both top of stk and char are "^"(exponentiation)
+                break                                         # break out of loop, we need to push it in stk since ^ are evaluated right to left
             out_lst.append(stk.pop())                     # pop a token from the stack and append to out_lst
         stk.push(char)                                # after the loop ends, push the char in to the stack
 
@@ -83,7 +95,7 @@ def infix_to_postfix(input_str):
     sufficient_stk_size = 30                          # sufficient size of stack for this proj is 30
     stk = Stack(sufficient_stk_size)                  # create stack has sufficient size
     out_lst = []                                      # initiate output list
-    in_lst = input_str.split(" ")                     # store the char from the infix expression in in_lst
+    in_lst = input_str.split()                        # store the char from the infix expression in in_lst
     for char in in_lst:                               # loop through the char in the infix expression
         in_to_post_branch(stk, out_lst, in_lst, char) # infix to post fix branch logic helper function
     while stk.num_item != 0:                          # while stack is not empty
@@ -92,8 +104,53 @@ def infix_to_postfix(input_str):
 
 
 def postfix_valid(input_str):
-    pass
+    counter = 0
+    in_lst = input_str.split()
+    for char in in_lst:
+        if is_digit(char):
+            counter += 1
+        elif is_operator(char):
+            counter -= 2
+            if counter < 0:
+                return False
+            counter += 1
+    if counter == 1:
+        return True
+
+
+
+def eval_helper_operate(char, num_1, num_2):
+    if char == "^":
+        return num_1 ** num_2
+    elif char == "*":
+        return num_1 * num_2
+    elif char == "/":
+        if num_2 == 0:
+            raise ValueError
+        else:
+            return num_1 / num_2
+    elif char == "-":
+        return num_1 - num_2
+    elif char == "+":
+        return num_1 + num_2
+    else:
+        raise ValueError
 
 
 def postfix_eval(input_str):
-    pass
+    sufficient_stk_size = 30                          # sufficient size of stack for this proj is 30
+    stk = Stack(sufficient_stk_size)    
+    in_lst = input_str.split()
+    for char in in_lst:
+        if is_digit(char):
+            stk.push(int(char))
+        else:
+            num_2 = stk.pop() 
+            num_1 = stk.pop()
+            ans = eval_helper_operate(char, num_1, num_2)
+            stk.push(ans)
+    return stk.pop()
+
+
+
+
